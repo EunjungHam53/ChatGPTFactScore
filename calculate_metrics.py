@@ -12,9 +12,14 @@ from transformers import BartTokenizer, BartForConditionalGeneration
 
 import nltk
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
-from rouge_score import rouge_scorer
+
+from rouge import Rouge
+from pyvi import ViTokenizer
+
 from bert_score.scorer import BERTScorer
 nltk.download('punkt')
+
+from .config import BERT_MODEL, BART_MODEL
 
 class BARTScorer:
     def __init__(self, device='cuda:0', max_length=1024, checkpoint='facebook/bart-large-cnn'):
@@ -123,8 +128,8 @@ class BARTScorer:
 
 def calculate_bleu(reference_summary, generated_summary):
     # Tokenize the reference and generated summaries
-    reference_tokens = [nltk.word_tokenize(reference_summary.lower())]
-    generated_tokens = nltk.word_tokenize(generated_summary.lower())
+    reference_tokens = [ViTokenizer.tokenize(reference_summary.lower()).split()]
+    generated_tokens = ViTokenizer.tokenize(generated_summary.lower()).split()
     
     # Use SmoothingFunction to avoid zero scores in case of small text sizes
     smoothing = SmoothingFunction().method4
@@ -135,16 +140,16 @@ def calculate_bleu(reference_summary, generated_summary):
     return bleu_score
 
 def calculate_rouge(reference_summary, generated_summary):
-    # Create a ROUGE scorer
-    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+    # Tokenize tiếng Việt trước khi tính ROUGE
+    reference_tokenized = ViTokenizer.tokenize(reference_summary.lower())
+    generated_tokenized = ViTokenizer.tokenize(generated_summary.lower())
     
-    # Compute ROUGE scores
-    scores = scorer.score(reference_summary, generated_summary)
+    rouge = Rouge()
+    scores = rouge.get_scores(generated_tokenized, reference_tokenized)[0]
     
-    # Extract the F1 scores for ROUGE-1, ROUGE-2, and ROUGE-L
-    rouge_1 = scores['rouge1'].fmeasure
-    rouge_2 = scores['rouge2'].fmeasure
-    rouge_l = scores['rougeL'].fmeasure
+    rouge_1 = scores['rouge-1']['f']
+    rouge_2 = scores['rouge-2']['f']
+    rouge_l = scores['rouge-l']['f']
     
     return rouge_1, rouge_2, rouge_l
 
@@ -173,8 +178,8 @@ def main():
     else:
         device = "cpu"
 
-    bert_scorer = BERTScorer("bert-base-uncased", device=device)
-    bart_scorer = BARTScorer(checkpoint="facebook/bart-large", device=device)
+    bert_scorer = BERTScorer(BERT_MODEL, device=device)
+    bart_scorer = BARTScorer(checkpoint=BART_MODEL, device=device)
     
     # 1) load data
     with open(args.data_path, 'r', encoding='utf8') as f:

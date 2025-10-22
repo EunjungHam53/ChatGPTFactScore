@@ -10,17 +10,18 @@ from openai.error import (APIError, RateLimitError, ServiceUnavailableError,
 from tenacity import (before_sleep_log, retry, retry_if_exception_type,
                       stop_after_delay, wait_random_exponential, stop_after_attempt)
 from tiktoken import Encoding, encoding_for_model
+import sys
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+from config import OPENAI_MODEL, MAX_MODEL_TOKEN_COUNT, MAX_RESPONSE_TOKEN_COUNT
 
 logger = logging.getLogger(__name__)
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-OPENAI_MODEL_ID = 'gpt-4o-mini-2024-07-18'
-# This value is set by OpenAI for the selected model and cannot be changed.
-MAX_MODEL_TOKEN_COUNT = 4096
-# This value can be changed.
-MAX_RESPONSE_TOKEN_COUNT = 512
+OPENAI_MODEL_ID = OPENAI_MODEL
 RESPONSES_DIRECTORY_PATH = Path('../openai-api-responses-new')
 
 

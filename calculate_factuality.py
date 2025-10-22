@@ -8,6 +8,8 @@ import torch
 
 from src.fact.narrativefactscore import NarrativeFactScore
 
+from .config import OPENAI_MODEL
+
 def _set_seed(seed):
     np.random.seed(seed)
     random.seed(seed)
@@ -24,8 +26,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, required=True, help='Path to your data')
     parser.add_argument('--summary_path', type=str, required=True, help='Path to the summary')
-    parser.add_argument('--output_path', type=str, required=True, default='./dataset/MENSA/3_factscore/iter_0/gpt-4o-mini-2024-07-18/test', help='Path to save summaries')
-    parser.add_argument('--model', type=str, required=True, default='gpt-4o-mini-2024-07-18', help='Path to save summaries')
+    parser.add_argument('--output_path', type=str, required=True, default='./dataset/MENSA/3_factscore/iter_0/gpt-4o-mini/test', help='Path to save summaries')
+    parser.add_argument('--model', type=str, default=OPENAI_MODEL, help='Model name for factuality checking')
     parser.add_argument('--start', type=int, default=0)
     parser.add_argument('--end', type=int, default=-1)
     parser.add_argument('--kg_path', type=str, default='dataset/MENSA/1_kg/test')

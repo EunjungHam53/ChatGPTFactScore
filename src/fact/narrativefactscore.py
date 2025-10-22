@@ -21,12 +21,18 @@ from .utils import break_down2scenes
 from .prompt import build_fact_prompt
 from .openai_api import openai_api_response
 
+import sys
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+from config import OPENAI_MODEL, EMBEDDING_MODEL
+
 openai.api_key = os.getenv('OPENAI_API_KEY')
 logger = logging.getLogger(__name__)
 
 class NarrativeFactScore():
-    def __init__(self, device="cuda:0", model="gpt-4o-mini-2024-07-18", split_type="gpt", checkpoint=None):
-        self.sent_model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
+    def __init__(self, device="cuda:0", model=OPENAI_MODEL, split_type="gpt", checkpoint=None):
+        self.sent_model = BGEM3FlagModel(EMBEDDING_MODEL, use_fp16=True)
         self.model = model
         self.device = device
         self.split_type = split_type
@@ -136,7 +142,7 @@ class NarrativeFactScore():
         return all_scores, all_scores_per_sent, all_relevant_scenes, all_summary_chunks, all_feedback_list
 
 class GPTScore():
-    def __init__(self, model="gpt-4o-mini-2024-07-18", prompt='./templates/fact_score.txt'):
+    def __init__(self, model=OPENAI_MODEL, prompt='./templates/fact_score.txt'):
         # Set up model
         self.max_length = 1024
         self.model = model
@@ -181,7 +187,7 @@ class GPTScore():
             
             except RuntimeError:
                 traceback.print_exc()
-                print(f"source: {src_list}")
-                print(f"target: {tgt_list}")
+                print(f"source: {src}")
+                print(f"target: {tgt}")
                 exit(0)
         return score_list, feedback_list

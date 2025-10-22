@@ -4,7 +4,6 @@ from contextlib import redirect_stdout
 from pathlib import Path
 import json
 import argparse
-import os
 import openai
 import time
 import numpy as np
@@ -14,12 +13,17 @@ from pyvis.network import Network
 from tqdm import tqdm
 from contextlib import redirect_stdout
 
-
+import sys
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 
 from .knowledge_graph import generate_knowledge_graph
 from .openai_api import load_response_text
 from .save_triples import get_response_save_path
 from .utils import set_up_logging
+
+from config import OPENAI_MODEL
 
 logger = set_up_logging('generate-knowledge-graphs-books.log')
 KNOWLEDGE_GRAPHS_DIRECTORY_PATH = Path('../knowledge-graphs_new')
@@ -33,7 +37,7 @@ def gpt_inference(system_instruction, prompt, retries=10, delay=5):
     for attempt in range(retries):
         try:
             response = openai.ChatCompletion.create(
-                model='gpt-4o-mini-2024-07-18',
+                model=OPENAI_MODEL,
                 messages=messages,
                 temperature=0.0,
                 max_tokens=128,

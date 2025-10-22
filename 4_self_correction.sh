@@ -4,7 +4,7 @@
 dataset=$1 #MovieSum, MENSA 
 type=$2 #train, validation, test
 iter=$3
-model=gpt-4o-mini-2024-07-18
+model=${4:-gpt-4o-mini}
 
 # base paths
 data_path=dataset/${dataset}/0_raw/${type}.jsonl

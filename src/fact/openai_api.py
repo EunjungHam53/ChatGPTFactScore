@@ -13,16 +13,16 @@ from tiktoken import Encoding, encoding_for_model
 
 logger = logging.getLogger(__name__)
 
+import sys
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
+from config import OPENAI_MODEL, MAX_MODEL_TOKEN_COUNT, MAX_RESPONSE_TOKEN_COUNT
+
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-OPENAI_MODEL_ID = 'gpt-4o-mini'
-# This value is set by OpenAI for the selected model and cannot be changed.
-MAX_MODEL_TOKEN_COUNT = 4096
-# This value can be changed.
-MAX_RESPONSE_TOKEN_COUNT = 512
-
-
+OPENAI_MODEL_ID = OPENAI_MODEL
 
 @retry(retry=retry_if_exception_type((APIError, Timeout, RateLimitError,
                                       ServiceUnavailableError, APIConnectionError, InvalidRequestError)),

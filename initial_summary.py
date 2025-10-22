@@ -10,6 +10,8 @@ from src.summary.scripty_summarizer import ScriptySummarizer
 from src.summary.utils import preprocess_script, chunk_script_gpt
 from src.summary.prompt import build_summarizer_prompt
 
+from .config import OPENAI_MODEL
+
 def _set_seed(seed):
     np.random.seed(seed)
     random.seed(seed)
@@ -25,7 +27,7 @@ def main():
     ## 1> arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type=str, required=True, help='Path to your data')
-    parser.add_argument('--model', type=str, required=True, help='Path to your model')
+    parser.add_argument('--model', type=str, default=OPENAI_MODEL, help='Model name for summarization')
     parser.add_argument('--chunk_size', type=int, default=2048, help='Chunk size for summarization')
     parser.add_argument('--output_path', type=str, required=True, default='./dataset/3_summary', help='Path to save summaries')
     args = parser.parse_args()
